@@ -10,13 +10,13 @@ compounds
 end compounds
 
 keys 
-    abstract       after       all         always       and
-    as             assert      before      but          check
+    abstract       after       `all         always       and
+    as             `assert      before      but          check
     disj           else        enabled     event        eventually
     exactly        extends     fact        for          fun
     historically   iden        iff         implies      in
     Int            invariant   let         lone         modifies
-    module         no          none        not          once   
+    module         no          none        `not          once   
     one            open        or          pred         releases
     run            set         sig         since        some
     steps          sum         triggered   univ         until
@@ -24,22 +24,98 @@ keys
     
 end keys
 
+tokens
+    name "[\a][\a\d_\"]*"
+    number "0|([1-9]\d*)"
+end tokens
+
 define alloyModule
     [opt moduleDecl] [repeat import] [repeat paragraph]
 end define
 
 define moduleDecl
-    module [qualName] [opt nameList]
+    module [qualName] [opt nameListPlus]
 end define
 
-define nameList
+define nameListPlus
     `[ [list name +] `]
 end define
 
 define `import
-    open [qualName] [opt qualNameList] [opt imAsName]
+    open [qualName] [opt qualNameListPlus] [opt imAsName]
 end define
 
-define qualNameList
+define qualNameListPlus
     `[ [list qualName +]  `]
+end define
+
+define importRule     % normally called import
+    open [qualName] [opt qualNameListPlus] [opt asName]
+end define
+
+define asName
+    as name
+end define
+
+define paragraph
+    [sigDecl] | [factDecl] | [predDecl] | [funDecl] | [assertDecl] | [cmdDecl]
+end define
+
+define sigDecl
+    [opt abstract] [opt mult] sig [list name] [opt sigExit] { [list decl] } [opt block]
+end define
+
+define sigExt
+    extends [qualName] | in [qualName] [repeat plusQualName]
+end define
+
+define plusQualName
+    + [qualName]
+end define
+
+define mult
+    lone | some | none
+end define
+
+define factDecl
+    fact [opt name] [block]
+end define
+
+define predDecl
+    pred [opt qualNameDot] name [opt paraDecls] [block]
+
+define qualNameDot
+    [qualName] .
+end define
+
+define funDecl
+    fun [opt qualNameDot] name [opt paraDecls] : [expr] { [expr] }
+end define
+
+define paraDecls
+    ( [list decl] ) | `[ [list decl] `]
+end define
+
+define assertDecl
+    assert [opt name] [blokc]
+end define
+
+define cmdDecl
+    [opt nameColon] [opt runOrCheck] [opt qualNameOrBlock] [opt scope]
+end define
+
+define runOrCheck
+    run | check
+end define
+
+define qualNameOrBlock
+    [qualName] | [block]
+end define
+
+define scope
+    for number | [opt butTypeScopeListPlus] | for [list typescope +]
+end define
+
+define but butTypeScopeListPlus
+    but [list typescope+]
 end define
