@@ -6,8 +6,8 @@ end comments
 
 % name
 compounds
-    => >= -> <: :> ++ ||
-end compounds
+    => >= -> <: :> ++ || && <=>
+end compoundscompounds
 
 keys 
     abstract       after       `all         always       and
@@ -119,3 +119,71 @@ end define
 define but butTypeScopeListPlus
     but [list typescope+]
 end define
+
+
+define expr
+    [const] | [qualName] | @name | this 
+    | [unOp] [expr] | [expr] [binOp] [expr] | [expr] [arrowOp] [expr]
+    | [expr] `[ [list expr]  `]
+    | [expr] `[! | not`] [compareOp] [expr]
+    | [expr] ( => | implies ) [expr] else [expr]
+    | let [list letDecl+] [blockOrBar]
+    | quant [list decl+] [blockOrBar]
+    | {[list decl+] [blockOrBar]}
+    | expr '
+    | ( [expr] ) | [block]
+end define 
+
+define const
+    [-] number | none | univ | iden
+end define 
+
+define unOp
+    ! | not | no | [mult] | set | # | ~ | * | ^
+end define
+
+define binOp
+    || | or | && | and | <=> | iff | => | implies | & | + | - | ++ | <: | :> | .
+end define
+
+define arrowOp
+    [multorset] -> [multorset]
+end define
+
+define multorset
+    [mult] | set
+end define
+
+define compareOp
+    in | = | < | > | =< | >=
+end define 
+
+define letDecl
+    name = [expr]
+end define
+
+define block
+    { [expr*] }
+end define
+
+define blockOrBar
+    [block] | [bar] [expr]
+end define
+
+define quant
+    all | no | sum | [mult]
+end define
+
+define bar
+    `|
+end define
+
+define nameslash
+    name /
+end define
+
+define qualName 
+    `[this/`] [nameslash*] name
+end define 
+
+
