@@ -1,5 +1,9 @@
 comments
     //
+    --
     /* */
 end comments
 
+compounds
+    => >= -> <: :> ++ ||
+end compounds
