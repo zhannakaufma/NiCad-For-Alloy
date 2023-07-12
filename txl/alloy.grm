@@ -7,20 +7,20 @@ end comments
 % name
 compounds
     => >= -> <: :> ++ || && <=>
-end compoundscompounds
+end compounds
 
 keys 
-    abstract       after       `all         always       and
-    as             `assert      before      but          check
-    disj           else        enabled     event        eventually
-    exactly        extends     fact        for          fun
-    historically   iden        iff         implies      in
-    Int            invariant   let         lone         modifies
-    module         no          none        `not          once   
-    one            open        or          pred         releases
-    run            set         sig         since        some
-    steps          sum         triggered   univ         until
-    var
+    'abstract       'after       'all         'always       'and
+    'as             'assert      'before     'but          'check
+    'disj           'else        'enabled     'event        'eventually
+    'exactly        'extends     'fact        'for          'fun
+    'historically   'iden        'iff         'implies      'in
+    'Int            'invariant   'let         'lone         'modifies
+    'module         'no          'none        'not          'once   
+    'one            'open        'or          'pred         'releases
+    'run            'set         'sig         'since        'some
+    'steps          'sum         'triggered   'univ         'until
+    'var 
     
 end keys
 
@@ -29,24 +29,25 @@ tokens
     number "0|([1-9]\d*)"
 end tokens
 
-define alloyModule
-    [opt moduleDecl] [repeat import] [repeat paragraph]
+define program
+    [alloyModule]
 end define
+
+define alloyModule
+    [opt moduleDecl] [repeat importRule] [repeat paragraph]
+end define
+
 
 define moduleDecl
     module [qualName] [opt nameListPlus]
 end define
 
 define nameListPlus
-    `[ [list name +] `]
-end define
-
-define `import
-    open [qualName] [opt qualNameListPlus] [opt imAsName]
+    '[ [list name +] ']
 end define
 
 define qualNameListPlus
-    `[ [list qualName +]  `]
+    '[ [list qualName +]  ']
 end define
 
 define importRule     % normally called import
@@ -54,7 +55,11 @@ define importRule     % normally called import
 end define
 
 define asName
-    as name
+    as [name]
+end define
+
+define decl
+    [opt 'disj] [list name +] ': [opt 'disj] [expr]
 end define
 
 define paragraph
@@ -62,7 +67,7 @@ define paragraph
 end define
 
 define sigDecl
-    [opt abstract] [opt mult] sig [list name] [opt sigExit] { [list decl] } [opt block]
+    [opt 'abstract] [opt mult] sig [list name] [opt sigExt] { [list decl] } [opt block]
 end define
 
 define sigExt
@@ -82,26 +87,31 @@ define factDecl
 end define
 
 define predDecl
-    pred [opt qualNameDot] name [opt paraDecls] [block]
+    pred [opt qualNameDot] [name] [opt paraDecls] [block]
+end define 
 
 define qualNameDot
     [qualName] .
 end define
 
 define funDecl
-    fun [opt qualNameDot] name [opt paraDecls] : [expr] { [expr] }
+    fun [opt qualNameDot] [name] [opt paraDecls] : [expr] { [expr] }
 end define
 
 define paraDecls
-    ( [list decl] ) | `[ [list decl] `]
+    ( [list decl] ) | '[ [list decl] ']
 end define
 
 define assertDecl
-    assert [opt name] [blokc]
+    'assert [opt name] [block]
 end define
 
 define cmdDecl
     [opt nameColon] [opt runOrCheck] [opt qualNameOrBlock] [opt scope]
+end define
+
+define nameColon
+    [name] ':
 end define
 
 define runOrCheck
@@ -112,34 +122,37 @@ define qualNameOrBlock
     [qualName] | [block]
 end define
 
-define scope
-    for number | [opt butTypeScopeListPlus] | for [list typescope +]
+define typescope
+    [opt 'exactly] [number] [qualName]
 end define
 
-define but butTypeScopeListPlus
+define scope
+    for [number] | [opt butTypeScopeListPlus] | for [list typescope +]
+end define
+
+define butTypeScopeListPlus
     but [list typescope+]
 end define
 
 
 define expr
-    [const] | [qualName] | @name | this 
+    [const] | [qualName] | '@ [name] | this 
     | [unOp] [expr] | [expr] [binOp] [expr] | [expr] [arrowOp] [expr]
-    | [expr] `[ [list expr]  `]
-    | [expr] `[! | not`] [compareOp] [expr]
+    | [expr] '[ [list expr]  ']
+    | [expr] '[! | 'not'] [compareOp] [expr]
     | [expr] ( => | implies ) [expr] else [expr]
     | let [list letDecl+] [blockOrBar]
     | quant [list decl+] [blockOrBar]
     | {[list decl+] [blockOrBar]}
-    | expr '
     | ( [expr] ) | [block]
 end define 
 
 define const
-    [-] number | none | univ | iden
+    [opt '-] [number] | none | univ | iden
 end define 
 
 define unOp
-    ! | not | no | [mult] | set | # | ~ | * | ^
+    ! | 'not | no | [mult] | set | # | ~ | * | ^
 end define
 
 define binOp
@@ -159,7 +172,7 @@ define compareOp
 end define 
 
 define letDecl
-    name = [expr]
+    [name] = [expr]
 end define
 
 define block
@@ -171,19 +184,19 @@ define blockOrBar
 end define
 
 define quant
-    all | no | sum | [mult]
+    'all | no | sum | [mult]
 end define
 
 define bar
-    `|
+    '|
 end define
 
 define nameslash
-    name /
+    [name] /
 end define
 
 define qualName 
-    `[this/`] [nameslash*] name
+    '[this/'] [nameslash*] [name]
 end define 
 
 
