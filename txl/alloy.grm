@@ -6,8 +6,8 @@ end comments
 
 % name
 compounds
-    => >= -> <: :> ++ ||
-end compounds
+    => >= -> <: :> ++ || && <=>
+end compoundscompounds
 
 keys 
     abstract       after       all         always       and
