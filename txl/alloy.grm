@@ -4,6 +4,7 @@ comments
     /* */
 end comments
 
+% name
 compounds
     => >= -> <: :> ++ ||
 end compounds
@@ -22,3 +23,23 @@ keys
     var
     
 end keys
+
+define alloyModule
+    [opt moduleDecl] [repeat import] [repeat paragraph]
+end define
+
+define moduleDecl
+    module [qualName] [opt nameList]
+end define
+
+define nameList
+    `[ [list name +] `]
+end define
+
+define `import
+    open [qualName] [opt qualNameList] [opt imAsName]
+end define
+
+define qualNameList
+    `[ [list qualName +]  `]
+end define
