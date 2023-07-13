@@ -1,8 +1,8 @@
 /********************************************************/
 /* Executions on a GPU                                  */
 /********************************************************/
-open util/relation
 module amd_gpu
+open util/relation
 
 sig Loc {}
 sig Val {}
