@@ -482,6 +482,29 @@ pred mp {
   }
 }
 
+
+pred mp2 {
+
+  consistent
+
+  some disj x, y : Loc |
+  some disj a0, a1, a2, b0, b1, b2 : Action {
+
+    (a0 -> a1) + (a1 -> a2) in then & same_thd
+    (b0 -> b1) + (b1 -> b2) in then & same_thd
+
+    // Alloy is not allowed to add extra instructions
+    Inst in a0 + a1 + a2 + b0 + b1 + b2
+
+    a0 in Store && a0.loc = x && a0.wval != Zero
+    a1 in Flush
+    a2 in Store && a2.loc = y && a2.wval != Zero
+    b0 in Inval
+    b1 in Load  && b1.loc = y && b1.rval != Zero
+    b2 in Load  && b2.loc = x && b2.rval = Zero
+  }
+}
+
 pred atom_forced_1 {
 
   consistent
