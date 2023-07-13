@@ -16,7 +16,7 @@ redefine block
 	% input format
 	[srclinenumber]
 	{ [IN] [NL]
-	 [expr*] [EX]
+	 [expr*] [EX] [NL]
 	 [srclinenumber]
 	} [NL]
 	|
@@ -43,7 +43,7 @@ function main
     	_ [^ P] 			% Extract all blocks from program
 	  [convertBlocks] 	% Mark up with XML
     by 
-    	P
+    	Blocks
 end function
 
 rule convertBlocks

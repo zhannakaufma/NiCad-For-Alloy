@@ -26,7 +26,7 @@ end keys
 
 tokens
     name "[\a][\a\d_\"]*"
-    number "0|([1-9]\d*)"
+    %number "0|([1-9]\d*)"
 end tokens
 
 define program
@@ -58,9 +58,7 @@ define asName
     'as [name]
 end define
 
-define decl
-    [opt 'disj] [list name +] ': [opt 'disj] [expr]
-end define
+
 
 define paragraph
     [sigDecl] | [factDecl] | [predDecl] | [funDecl] | [assertDecl] | [cmdDecl]
@@ -68,6 +66,10 @@ end define
 
 define sigDecl
     [opt 'abstract] [opt mult] 'sig [list name] [opt sigExt] { [list decl] [opt ',] } [opt block]
+end define
+
+define decl
+    [opt 'disj] [list name +] ': [opt 'disj] [expr]
 end define
 
 define sigExt
@@ -79,7 +81,7 @@ define plusQualName
 end define
 
 define mult
-    lone | some | one
+    'lone | 'some | 'one
 end define
 
 define factDecl
@@ -95,11 +97,11 @@ define qualNameDot
 end define
 
 define funDecl
-    'fun [opt qualNameDot] [name] [opt paraDecls] : [expr] { [expr] }
+    'fun [opt qualNameDot] [name] [opt paraDecls] ': [expr] { [expr] }
 end define
 
 define paraDecls
-    ( [list decl] [opt ',] ) | '[ [list decl] [opt ',] ']
+    '( [list decl] [opt ',] ') | '[ [list decl] [opt ',] ']
 end define
 
 define assertDecl
@@ -115,7 +117,7 @@ define nameColon
 end define
 
 define runOrCheck
-    run | check
+    'run | 'check
 end define
 
 define qualNameOrBlock
@@ -136,16 +138,118 @@ end define
 
 
 define expr
-    [const] | [qualName] | '@ [name] | 'this 
-    | [unOp] [expr] | [expr] [binOp] [expr] | [expr] [arrowOp] [expr]
-    | [expr] '[ [list expr]  ']
-    | [expr] [opt negation] [compareOp] [expr]
-    | [expr] ( '=> | 'implies ) [expr] 'else [expr]
-    | 'let [list letDecl+] [blockOrBar]
+    [block_expr]
+end define
+
+define block_expr
+    [block]
+    | `{ [list decl+] [opt ',] [blockOrBar] `}
     | [quant] [list decl+] [blockOrBar]
-    | {[list decl+] [opt ',] [blockOrBar]}
-    | ( [expr] ) | [block]
-end define 
+    | 'let [list letDecl+] [blockOrBar]
+    | [disj_expr]
+end define
+
+
+
+define disj_expr
+    [disj_expr] '|| [bi_imp_expr]
+    | [disj_expr] 'or [bi_imp_expr]
+    | [bi_imp_expr]
+end define
+
+define bi_imp_expr
+    [bi_imp_expr] '<=> [ite_expr]
+    | [bi_imp_expr] 'iff [ite_expr]
+    | [impl_expr]
+end define
+
+define impl_expr
+    [ite_expr] [implication] [impl_expr]
+    | [ite_expr]
+end define
+
+define ite_expr
+    [conj_expr] [implication] [conj_expr] `else [expr]  % error?
+    | [conj_expr]
+end define
+
+
+
+define conj_expr
+    [conj_expr] '&& [negation_expr]
+    | [conj_expr] 'and [negation_expr]
+    | [negation_expr]
+end define
+
+
+define negation_expr
+    [negation] [negation_expr] | [comp_expr]
+end define
+
+define comp_expr
+    [comp_expr] [opt negation] [compareOp] [quant_mult_expr]
+    | [quant_mult_expr]
+end define
+
+define quant_mult_expr
+    [quant_mult_op] [union_diff_expr]
+    | [union_diff_expr]
+end define
+
+define quant_mult_op
+    'no | 'some | 'lone | 'one | 'set
+end define
+
+define union_diff_expr
+    [union_diff_expr] '+ [card_expr]
+    | [union_diff_expr] '- [card_expr]
+    | [card_expr]
+end define  
+
+define card_expr
+    '# [override_expr] | [override_expr]
+end define
+
+define override_expr
+    [override_expr] '++ [intersect_expr]
+    | [intersect_expr]
+end define
+
+
+define intersect_expr
+    [intersect_expr] '& [restrict_expr]
+    | [restrict_expr]
+end define
+
+define arrow_expr
+    [arrow_expr] [arrowOp] [restrict_expr]
+    | [restrict_expr]
+end define
+
+define restrict_expr
+    [restrict_expr] ':> [box_join_expr]
+    | [restrict_expr] '<: [box_join_expr]
+    | [box_join_expr]
+end define
+
+define box_join_expr
+    [box_join_expr] '[ [list expr] ']
+    | [dot_join_expr]
+end define
+
+define dot_join_expr
+    [dot_join_expr] '. [un_expr]
+    | [un_expr]
+end define
+
+define un_expr
+    [unOp] [expr] | '( [expr] ') | 'this | '@ [name] | [qualName] | [const]
+end define
+
+
+define implication
+    '=> | 'implies
+end define
 
 define negation
     '! | 'not
@@ -160,11 +264,11 @@ define unOp
 end define
 
 define binOp
-    || | or | && | and | <=> | iff | => | implies | & | + | - | ++ | <: | :> | .
+    || | or | && | and | <=> | iff | => | implies | & | + | - | ++ | <: | :>
 end define
 
 define arrowOp
-    [opt multorset] -> [opt multorset]
+    [opt multorset] '-> [opt multorset]
 end define
 
 define multorset
@@ -180,7 +284,7 @@ define letDecl
 end define
 
 define block
-    { [IN] [expr*] [EX] } [NL][NL]
+    '{ [IN] [repeat expr] [EX] '} [NL][NL]
 end define
 
 define blockOrBar
