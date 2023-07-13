@@ -143,8 +143,8 @@ end define
 
 define block_expr
     [block]
-    | `{ [list decl+] [opt ',] [blockOrBar] `}
-    | [quant] [list decl+] [blockOrBar]
+    | '{ [list decl+] [opt ',] [blockOrBar] }
+    | [quant] [opt 'disj] [list decl+] [blockOrBar]
     | 'let [list letDecl+] [blockOrBar]
     | [disj_expr]
 end define
@@ -158,21 +158,19 @@ define disj_expr
 end define
 
 define bi_imp_expr
-    [bi_imp_expr] '<=> [ite_expr]
-    | [bi_imp_expr] 'iff [ite_expr]
+    [bi_imp_expr] '<=> [impl_expr]
+    | [bi_imp_expr] 'iff [impl_expr]
     | [impl_expr]
 end define
 
 define impl_expr
-    [ite_expr] [implication] [impl_expr]
-    | [ite_expr]
-end define
-
-define ite_expr
-    [conj_expr] [implication] [conj_expr] `else [expr]  % error?
+    [conj_expr] [implication] [impl_expr] [opt else_expr]
     | [conj_expr]
 end define
 
+define else_expr
+    'else [expr]
+end define
 
 
 define conj_expr
@@ -192,7 +190,7 @@ define comp_expr
 end define
 
 define quant_mult_expr
-    [quant_mult_op] [union_diff_expr]
+    [quant_mult_op] [list decl +] [blockOrBar]
     | [union_diff_expr]
 end define
 
@@ -218,7 +216,7 @@ end define
 
 define intersect_expr
     [intersect_expr] '& [restrict_expr]
-    | [restrict_expr]
+    | [arrow_expr]
 end define
 
 define arrow_expr
@@ -233,12 +231,15 @@ define restrict_expr
 end define
 
 define box_join_expr
-    [box_join_expr] '[ [list expr] ']
+    [box_join_expr] '[ [list expr] '] '. [dot_join_expr]
+    | [box_join_expr] '[ [list expr] ']
+    | 'disj '[ [list expr] ']
+    | 'disj '[ [list expr] '] '. [dot_join_expr]
     | [dot_join_expr]
 end define
 
 define dot_join_expr
-    [dot_join_expr] '. [un_expr]
+    [box_join_expr] '. [un_expr]
     | [un_expr]
 end define
 
