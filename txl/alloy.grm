@@ -39,23 +39,23 @@ end define
 
 
 define moduleDecl
-    module [qualName] [opt nameListPlus]
+    'module [qualName] [opt nameListPlus]
 end define
 
 define nameListPlus
-    '[ [list name +] ']
+    '[ [list name +] [opt ',] ']
 end define
 
 define qualNameListPlus
-    '[ [list qualName +]  ']
+    '[ [list qualName +] [opt ',] ']
 end define
 
 define importRule     % normally called import
-    open [qualName] [opt qualNameListPlus] [opt asName]
+    'open [qualName] [opt qualNameListPlus] [opt asName]
 end define
 
 define asName
-    as [name]
+    'as [name]
 end define
 
 define decl
@@ -67,27 +67,27 @@ define paragraph
 end define
 
 define sigDecl
-    [opt 'abstract] [opt mult] sig [list name] [opt sigExt] { [list decl] } [opt block]
+    [opt 'abstract] [opt mult] 'sig [list name] [opt sigExt] { [list decl] [opt ',] } [opt block]
 end define
 
 define sigExt
-    extends [qualName] | in [qualName] [repeat plusQualName]
+    'extends [qualName] | 'in [qualName] [repeat plusQualName]
 end define
 
 define plusQualName
-    + [qualName]
+    '+ [qualName]
 end define
 
 define mult
-    lone | some | none
+    lone | some | one
 end define
 
 define factDecl
-    fact [opt name] [block]
+    'fact [opt name] [block]
 end define
 
 define predDecl
-    pred [opt qualNameDot] [name] [opt paraDecls] [block]
+    'pred [opt qualNameDot] [name] [opt paraDecls] [block]
 end define 
 
 define qualNameDot
@@ -95,11 +95,11 @@ define qualNameDot
 end define
 
 define funDecl
-    fun [opt qualNameDot] [name] [opt paraDecls] : [expr] { [expr] }
+    'fun [opt qualNameDot] [name] [opt paraDecls] : [expr] { [expr] }
 end define
 
 define paraDecls
-    ( [list decl] ) | '[ [list decl] ']
+    ( [list decl] [opt ',] ) | '[ [list decl] [opt ',] ']
 end define
 
 define assertDecl
@@ -127,25 +127,29 @@ define typescope
 end define
 
 define scope
-    for [number] | [opt butTypeScopeListPlus] | for [list typescope +]
+    'for [number] | [opt butTypeScopeListPlus] | 'for [list typescope +]
 end define
 
 define butTypeScopeListPlus
-    but [list typescope+]
+    'but [list typescope+]
 end define
 
 
 define expr
-    [const] | [qualName] | '@ [name] | this 
+    [const] | [qualName] | '@ [name] | 'this 
     | [unOp] [expr] | [expr] [binOp] [expr] | [expr] [arrowOp] [expr]
     | [expr] '[ [list expr]  ']
-    | [expr] '[! | 'not'] [compareOp] [expr]
-    | [expr] ( => | implies ) [expr] else [expr]
-    | let [list letDecl+] [blockOrBar]
-    | quant [list decl+] [blockOrBar]
-    | {[list decl+] [blockOrBar]}
+    | [expr] [opt negation] [compareOp] [expr]
+    | [expr] ( '=> | 'implies ) [expr] 'else [expr]
+    | 'let [list letDecl+] [blockOrBar]
+    | [quant] [list decl+] [blockOrBar]
+    | {[list decl+] [opt ',] [blockOrBar]}
     | ( [expr] ) | [block]
 end define 
+
+define negation
+    '! | 'not
+end define
 
 define const
     [opt '-] [number] | none | univ | iden
@@ -160,7 +164,7 @@ define binOp
 end define
 
 define arrowOp
-    [multorset] -> [multorset]
+    [opt multorset] -> [opt multorset]
 end define
 
 define multorset
@@ -176,7 +180,7 @@ define letDecl
 end define
 
 define block
-    { [expr*] }
+    { [IN] [expr*] [EX] } [NL][NL]
 end define
 
 define blockOrBar
@@ -196,7 +200,10 @@ define nameslash
 end define
 
 define qualName 
-    '[this/'] [nameslash*] [name]
+    [opt this_slash] [nameslash*] [name]
 end define 
 
+define this_slash
+    'this /
+end define
 

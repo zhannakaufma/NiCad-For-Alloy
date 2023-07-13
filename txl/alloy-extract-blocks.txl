@@ -3,80 +3,58 @@ include "nicad.grm"
 
 include "alloy.grm"
 
+% Ignore BOM headers from Windows
+include "bom.grm"
+
+
 % Redefinitions to collect source coordinates for function definitions as parsed input,
 % and to allow for XML markup of function definitions as output
 
 % Modified to match constructors as well.  Even though the grammar still
 % has constructor_declaration in it, this one will match first. - JRC 25mar11
-
-redefine method_declaration
-	[repeat annotation]			% Remove @Override annotations from clone comparison
-	[method_definition]
-    |  
-    	[method_header]
-    	[opt annotation_default] ';               [NL][NL]
-end redefine
-
-define method_definition
-	% Input form 
-	[srclinenumber] 			% Keep track of starting file and line number
-	[method_header]
-	'{                                        [NL][IN] 
-	    [method_contents]			  [EX]
-	    [srclinenumber] 			% Keep track of ending file and line number
-	'}
-    |
-	% Output form 
-	[not token]				% disallow output form in input parse
+redefine block
+	% input format
+	[srclinenumber]
+	{ [IN] [NL]
+	 [expr*] [EX]
+	 [srclinenumber]
+	} [NL]
+	|
+	% Output format
+	[not token]
 	[opt xml_source_coordinate]
-	[method_header]
-	'{                                        [NL][IN] 
-	    [method_contents]			  [EX]
-	'}
+	{ [IN] [NL]
+		[expr*] [EX]
+	} [NL]
 	[opt end_xml_source_coordinate]
-end define
-
-define method_header
-	[repeat modifier] [opt generic_parameter] [opt type_specifier] [method_declarator] [opt throws] 
-end define
-
-define method_contents
-	[repeat declaration_or_statement]     
-	[opt expression_statement_no_semi]
-end define
-
-define annotation_default
-	'default [annotation_value]
-end define
+end redefine
 
 redefine program
 	...
-    | 	[repeat method_definition]
+    | 	[repeat block]
 end redefine
 
 
-% Main function - extract and mark up function definitions from parsed input program
+% Main function - extract and mark up blocks from parsed input program
 function main
     replace [program]
 	P [program]
-    construct Functions [repeat method_definition]
-    	_ [^ P] 			% Extract all functions from program
-	  [convertFunctionDefinitions] 	% Mark up with XML
+    construct Blocks [repeat block]
+    	_ [^ P] 			% Extract all blocks from program
+	  [convertBlocks] 	% Mark up with XML
     by 
-    	Functions [removeOptSemis]
-	          [removeEmptyStatements]
+    	P
 end function
 
-rule convertFunctionDefinitions
+rule convertBlocks
     import TXLargs [repeat stringlit]
 	FileNameString [stringlit]
 
-    % Find each function definition and match its input source coordinates
-    replace [method_definition]
+    % Find each block and match its input source coordinates
+    replace [block]
 	LineNumber [srclinenumber]
-	FunctionHeader [method_header]
 	'{
-	    FunctionBody [method_contents]
+	    Exprs [expr*]
 	    EndLineNumber [srclinenumber]
 	'}
 
@@ -90,40 +68,23 @@ rule convertFunctionDefinitions
     construct XmlHeader [xml_source_coordinate]
 	'<source file=FileNameString startline=LineNumberString endline=EndLineNumberString>
     by
-	XmlHeader
-	FunctionHeader 
+	XmlHeader 
 	'{
-	    FunctionBody [unmarkEmbeddedFunctionDefinitions] 
+	    Exprs [unmarkEmbeddedBlocks] 
 	'}
 	'</source>
 end rule
 
-rule unmarkEmbeddedFunctionDefinitions
-    replace [method_definition]
+rule unmarkEmbeddedBlocks
+    replace [block]
 	LineNumber [srclinenumber]
-	FunctionHeader [method_header]
 	'{
-	    FunctionBody [method_contents]
+	    Exprs [expr*]
 	    EndLineNumber [srclinenumber]
 	'}
     by
-	FunctionHeader 
 	'{
-	    FunctionBody 
+	    Exprs
 	'}
 end rule
 
-rule removeOptSemis
-    replace [opt ';]
-	';
-    by
-	% none
-end rule
-
-rule removeEmptyStatements
-    replace [repeat declaration_or_statement]
-	';
-	More [repeat declaration_or_statement]
-    by
-	More
-end rule
