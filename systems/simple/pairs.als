@@ -34,6 +34,19 @@ fact pair_clone_6 {
 	all x, y : A | x in y.pair iff y in x.pair
 }
 
+fact pair_clone_7 {
+	all x, y : A |
+		x in y.pair
+			iff
+				y in x.pair
+}
+
+fact pair_clone_8 {
+	all x, y : A |
+		x in y.pair
+}
+
+
 pred paired [x: A] {
 	some x.pair
 }
