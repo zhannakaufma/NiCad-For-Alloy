@@ -70,6 +70,7 @@ rule convertCompoundStatements
 	_ [quote LineNumber]
     construct EndLineNumberString [stringlit]
 	_ [quote EndLineNumber]
+        [putp "end line number"]
 
     % Output is XML form with attributes indicating input source coordinates
     construct XmlHeader [xml_source_coordinate]

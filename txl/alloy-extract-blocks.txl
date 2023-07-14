@@ -16,15 +16,14 @@ redefine block
 	% input format
 	[srclinenumber]
 	{ [IN] [NL]
-	 [expr*] [EX] [NL]
-	 [srclinenumber]
-	} [NL]
+	 [expr *] [EX] 
+	} [srclinenumber] [NL]
 	|
 	% Output format
 	[not token]
 	[opt xml_source_coordinate]
 	{ [IN] [NL]
-		[expr*] [EX]
+		[expr *] [EX]
 	} [NL]
 	[opt end_xml_source_coordinate]
 end redefine
@@ -41,7 +40,7 @@ function main
 	P [program]
     construct Blocks [repeat block]
     	_ [^ P] 			% Extract all blocks from program
-	  [convertBlocks] 	% Mark up with XML
+	  [convertBlocks] 
     by 
     	Blocks
 end function
@@ -51,12 +50,12 @@ rule convertBlocks
 	FileNameString [stringlit]
 
     % Find each block and match its input source coordinates
+    skipping [block]
     replace [block]
 	LineNumber [srclinenumber]
 	'{
-	    Exprs [expr*]
-	    EndLineNumber [srclinenumber]
-	'}
+	    Exprs [expr *]
+	'} EndLineNumber [srclinenumber]
 
     % Convert line numbers to strings for XML
     construct LineNumberString [stringlit]
@@ -69,7 +68,7 @@ rule convertBlocks
 	'<source file=FileNameString startline=LineNumberString endline=EndLineNumberString>
     by
 	XmlHeader 
-	'{
+	{
 	    Exprs [unmarkEmbeddedBlocks] 
 	'}
 	'</source>
@@ -79,12 +78,11 @@ rule unmarkEmbeddedBlocks
     replace [block]
 	LineNumber [srclinenumber]
 	'{
-	    Exprs [expr*]
-	    EndLineNumber [srclinenumber]
-	'}
+	    Exprs [expr *]
+	'} EndLineNumber [srclinenumber]
     by
 	'{
-	    Exprs
+	    Exprs 
 	'}
 end rule
 

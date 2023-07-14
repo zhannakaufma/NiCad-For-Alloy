@@ -1,0 +1,91 @@
+46 {
+    complete [@ then, Action] transitive [@ then] acyclic [@ then, Action] equivalence [@ same_wg, Action] equivalence [@ same_thd, Action] @ same_thd in @ same_wg 53}
+55 {
+    all x : Loc | x in loc implies l_pre.cac [x].hy = DIRTY no (loc & g_pre.locked) all x : Loc | x in loc => g_post.mem [x].val = l_pre.cac [x].val and g_post.mem [x].pco = glom [g_pre.mem [x].pco, l_pre.cac [x].pco] else g_post.mem [x] = g_pre.mem [x]
+      g_post.locked = g_pre.locked all x : Loc | x in loc => l_post.cac [x].hy = CLEAN and l_post.cac [x].fr = l_pre.cac [x].fr and l_post.cac [x].val = l_pre.cac [x].val else l_post.cac [x] = l_pre.cac [x] 83}
+85 {
+    g_post = g_pre no (loc & g_pre.locked) all x : Loc | x in loc implies l_pre.cac [x].hy ! = DIRTY all x : Loc | x in loc => l_post.cac [x].val = g_pre.mem [x].val and l_post.cac [x].hy = CLEAN and l_post.cac [x].fr = VALID and l_post.cac [x].pco = (
+      none -> none) else l_post.cac [x] = l_pre.cac [x] 106}
+108 {
+    g_post = g_pre all x : Loc | x in loc => l_post.cac [x].hy = l_pre.cac [x].hy and l_post.cac [x].fr = INVALID and l_post.cac [x].val = l_pre.cac [x].val and l_post.cac [x].pco = l_pre.cac [x].pco else l_post.cac [x] = l_pre.cac [x] 123}
+132 {
+    one loc one rval no wval l_post.cac = l_pre.cac g_post = g_pre l_pre.cac [loc].fr = VALID l_pre.cac [loc].val = rval 150}
+152 {
+    one loc one wval no rval g_post = g_pre l_post.cac [loc].val = wval l_post.cac [loc].hy = DIRTY l_post.cac [loc].fr = VALID l_post.cac [loc].pco = glom [l_pre.cac [loc].pco, this -> this] all x : Loc | x ! = loc implies l_post.cac [x] = l_pre.cac [x]
+  169}
+173 {
+    one loc one wval one rval l_pre.cac [loc].fr = VALID l_pre.cac [loc].val = rval l_post.cac [loc].val = wval l_post.cac [loc].hy = DIRTY l_post.cac [loc].fr = VALID l_post.cac [loc].pco = glom [l_pre.cac [loc].pco, this -> this] all x : Loc | x ! = loc
+      implies l_post.cac [x] = l_pre.cac [x] g_post = g_pre 195}
+197 {
+    no loc no wval no rval VALID not in l_pre.cac [Loc].fr l_post.cac = l_pre.cac g_post = g_pre 210}
+212 {
+    no loc no wval no rval VALID not in l_other.cac [Loc].fr l_post.cac = l_pre.cac g_post = g_pre 225}
+227 {
+    no loc no rval no wval DIRTY not in l_pre.cac [Loc].hy l_post.cac = l_pre.cac g_post = g_pre 239}
+241 {
+    no loc no rval no wval DIRTY not in l_other.cac [Loc].hy l_post.cac = l_pre.cac g_post = g_pre 253}
+255 {
+    one loc no rval no wval l_post.cac = l_pre.cac g_post.mem = g_pre.mem loc not in g_pre.locked g_post.locked = g_pre.locked + loc 270}
+272 {
+    one loc no rval no wval l_post.cac = l_pre.cac g_post.mem = g_pre.mem loc in g_pre.locked g_post.locked = g_pre.locked - loc 287}
+289 {
+    one i1.loc one i2.loc i1.loc = i2.loc 293}
+295 {
+    all x : Loc | gs.mem [x].val = Zero 297}
+299 {
+    no (ls.cac) 301}
+303 {
+    DIRTY not in ls.cac [Loc].hy 305}
+307 {
+    a not in Action.then 309}
+311 {
+    no (a.then) 313}
+315 {
+    no b : Action | (b -> a) in then & same_wg 317}
+319 {
+    no b : Action | (a -> b) in then & same_wg 321}
+323 {
+    (a -> b) in (then - same_wg) - ((then - same_wg).then) 325}
+327 {
+    (b -> a) in (then - same_wg) - (then.(then - same_wg)) 329}
+331 {
+    (a -> b) in then - (then.then) 333}
+335 {
+    (a -> b) in (then & same_wg) - ((then & same_wg).then) 337}
+339 {
+    (a -> b) in (Inst <: (then & same_thd) :> Inst) - ((Inst <: (then & same_thd) :> Inst).then) 342}
+344 {
+    (a -> b) in (Lock <: then :> Unlock) - ((Lock <: then :> Unlock).then) 347}
+361 {
+    all a : Action | is_first_action [a] implies initial_gstate [a.g_pre] all a : Action | is_first_action_in_wg [a] implies initial_lstate [a.l_pre] all a : Action | is_last_action_in_wg [a] implies final_lstate [a.l_post] all a : Lock | some b : Unlock |
+      (a -> b) in then & same_thd and a.loc = b.loc all a, b : Action | consecutive_lock_unlock [a, b] implies (a -> b) in same_thd all a : Load | no a.src => a.rval = Zero else a.rval = a.src.wval all a, b : Action | locally_consecutive [a, b] implies a.
+      l_post = b.l_pre all a, b : Action | globally_consecutive [a, b] implies a.g_post = b.g_pre all a, b : Action | is_next_action_in_other_wg [a, b] implies a.l_other = b.l_pre all a, b : Action | is_prev_action_in_other_wg [a, b] implies a.l_other = b
+      .l_post LState in Action.(l_pre + l_post) GState in Action.(g_pre + g_post) MemEntry in (GState.mem [Loc] + LState.cac [Loc]) 422}
+424 {
+    all a : Action | is_last_action [a] implies a.g_post.mem [x].val = v 429}
+431 {
+    consistent some disj x, y : Loc | some disj a0, a1, a2, a3, a4, a5, a6, a7, a8, a9 : Action 436 {
+        (a0 -> a1) + (a1 -> a2) + (a2 -> a3) + (a3 -> a4) + (a4 -> a5) + (a5 -> a6) + (a6 -> a7) + (a7 -> a8) + (a8 -> a9) in then (a0 -> a1) + (a1 -> a7) + (a7 -> a8) + (a8 -> a9) in same_thd (a2 -> a3) + (a3 -> a4) + (a4 -> a5) + (a5 -> a6) in same_thd (
+          a0 -> a2) not in same_thd same_thd = same_wg Inst in a0 + a2 + a4 + a5 + a8 + a9 a0 in Inval a1 in EnvFetch && a1.loc = x a2 in Store && a2.loc = x && a2.wval ! = Zero a3 in EnvFlush && a3.loc = x a4 in Flush a5 in Store && a5.loc = y && a5.wval
+          ! = Zero a6 in EnvFlush && a6.loc = y a7 in EnvFetch && a7.loc = y a8 in Load && a8.loc = y && a8.rval = a5.wval a9 in Load && a9.loc = x && a9.rval = Zero 460}
+461}
+436 {
+    (a0 -> a1) + (a1 -> a2) + (a2 -> a3) + (a3 -> a4) + (a4 -> a5) + (a5 -> a6) + (a6 -> a7) + (a7 -> a8) + (a8 -> a9) in then (a0 -> a1) + (a1 -> a7) + (a7 -> a8) + (a8 -> a9) in same_thd (a2 -> a3) + (a3 -> a4) + (a4 -> a5) + (a5 -> a6) in same_thd (a0
+      -> a2) not in same_thd same_thd = same_wg Inst in a0 + a2 + a4 + a5 + a8 + a9 a0 in Inval a1 in EnvFetch && a1.loc = x a2 in Store && a2.loc = x && a2.wval ! = Zero a3 in EnvFlush && a3.loc = x a4 in Flush a5 in Store && a5.loc = y && a5.wval ! =
+      Zero a6 in EnvFlush && a6.loc = y a7 in EnvFetch && a7.loc = y a8 in Load && a8.loc = y && a8.rval = a5.wval a9 in Load && a9.loc = x && a9.rval = Zero 460}
+463 {
+    consistent some disj x, y : Loc | some disj a0, a1, a2, b0, b1, b2 : Action 468 {
+        (a0 -> a1) + (a1 -> a2) in then & same_thd (b0 -> b1) + (b1 -> b2) in then & same_thd Inst in a0 + a1 + a2 + b0 + b1 + b2 a0 in Store && a0.loc = x && a0.wval ! = Zero a1 in Flush a2 in Store && a2.loc = y && a2.wval ! = Zero b0 in Inval b1 in Load
+          && b1.loc = y && b1.rval ! = Zero b2 in Load && b2.loc = x && b2.rval = Zero 482}
+483}
+468 {
+    (a0 -> a1) + (a1 -> a2) in then & same_thd (b0 -> b1) + (b1 -> b2) in then & same_thd Inst in a0 + a1 + a2 + b0 + b1 + b2 a0 in Store && a0.loc = x && a0.wval ! = Zero a1 in Flush a2 in Store && a2.loc = y && a2.wval ! = Zero b0 in Inval b1 in Load &&
+      b1.loc = y && b1.rval ! = Zero b2 in Load && b2.loc = x && b2.rval = Zero 482}
+486 {
+    consistent some disj x, y : Loc | some disj a0, a1, a2, b0, b1, b2 : Action 491 {
+        (a0 -> a1) + (a1 -> a2) in then & same_thd (b0 -> b1) + (b1 -> b2) in then & same_thd Inst in a0 + a1 + a2 + b0 + b1 + b2 a0 in Store && a0.loc = x && a0.wval ! = Zero a1 in Flush a2 in Store && a2.loc = y && a2.wval ! = Zero b0 in Inval b1 in Load
+          && b1.loc = y && b1.rval ! = Zero b2 in Load && b2.loc = x && b2.rval = Zero 505}
+506}
+491 {
+    (a0 -> a1) + (a1 -> a2) in then & same_thd (b0 -> b1) + (b1 -> b2) in then & same_thd Inst in a0 + a1 + a2 + b0 + b1 + b2 a0 in Store && a0.loc = x && a0.wval ! = Zero a1 in Flush a2 in Store && a2.loc = y && a2.wval ! = Zero b0 in Inval b1 in Load &&
+      b1.loc = y && b1.rval ! = Zero b2 in Load && b2.loc = x && b2.rval = Zero 505}

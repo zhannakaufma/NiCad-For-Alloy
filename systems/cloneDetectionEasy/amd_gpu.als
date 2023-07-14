@@ -512,6 +512,7 @@ run mp_forced for
 2 Val,
 2 Loc,
 10 Action
+expect 1
 // 10 seconds (plingeling on babillion)
 
 run mp for 
@@ -521,6 +522,7 @@ run mp for
 2 Val,
 2 Loc,
 10 Action
+expect 1
 // 11 mins (plingeling on babillion)
 
 run atom_forced_1 for 
@@ -530,6 +532,7 @@ run atom_forced_1 for
 3 Val,
 1 Loc,
 12 Action
+expect 1
 // 33 seconds (plingeling on babillion)
 
 
@@ -540,6 +543,7 @@ run atom_forced_2 for
 3 Val,
 1 Loc,
 9 Action
+expect 1
 // 2 seconds (plingeling on babillion)
 
 run atom for 
