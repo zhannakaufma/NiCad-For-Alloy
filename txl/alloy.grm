@@ -20,7 +20,7 @@ keys
     'one            'open        'or          'pred         'releases
     'run            'set         'sig         'since        'some
     'steps          'sum         'triggered   'univ         'until
-    'var 
+    'var            'expect
     
 end keys
 
@@ -109,7 +109,11 @@ define assertDecl
 end define
 
 define cmdDecl
-    [opt nameColon] [opt runOrCheck] [opt qualNameOrBlock] [opt scope]
+    [opt nameColon] [opt runOrCheck] [opt qualNameOrBlock] [opt scope] [opt expect_cmd]
+end define
+
+define expect_cmd
+    'expect [number]
 end define
 
 define nameColon
@@ -191,7 +195,7 @@ end define
 
 define quant_mult_expr
     [quant_mult_op] [union_diff_expr]
-    | [union_diff_expr]
+        | [union_diff_expr]
 end define
 
 define quant_mult_op
