@@ -190,7 +190,7 @@ define comp_expr
 end define
 
 define quant_mult_expr
-    [quant_mult_op] [list decl +] [blockOrBar]
+    [quant_mult_op] [union_diff_expr]
     | [union_diff_expr]
 end define
 
