@@ -1,0 +1,24 @@
+% NiCad literal renaming for C
+% Jim Cordy, May 2020
+
+rule renameLiterals
+    replace $ [expr]
+        E [expr]
+    by
+        E [renameNames]
+          [renameNumbers]
+end rule
+
+function renameNames
+    replace [expr]
+        N [name]
+    by
+        'a
+end function
+
+function renameNumbers
+    replace [expr]
+        F [number]
+    by
+        '1
+end function
